@@ -1,4 +1,6 @@
-package io.sunyi.link.core.network;
+package io.sunyi.link.core.server;
+
+import io.sunyi.link.core.network.Channel;
 
 /**
  * @author sunyi

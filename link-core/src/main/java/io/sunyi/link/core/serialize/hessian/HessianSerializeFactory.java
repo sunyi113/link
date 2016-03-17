@@ -12,6 +12,17 @@ public class HessianSerializeFactory implements SerializeFactory {
 	private HessianObjectReader reader;
 	private HessianObjectWriter writer;
 
+	private static HessianSerializeFactory instance = new HessianSerializeFactory();
+
+	private HessianSerializeFactory() {
+	}
+
+
+	public static HessianSerializeFactory getInstance() {
+		return instance;
+	}
+
+
 	@Override
 	public ObjectReader getObjectReader() {
 

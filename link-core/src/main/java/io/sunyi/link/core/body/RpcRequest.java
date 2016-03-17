@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * RPC 调用时的请求报文对象
- * Created by sunyi on 15/9/21.
  */
 public class RpcRequest implements Serializable {
 

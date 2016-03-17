@@ -8,7 +8,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.sunyi.link.core.network.Server;
+import io.sunyi.link.core.exception.LinkRuntimeException;
+import io.sunyi.link.core.network.NetworkServer;
+import io.sunyi.link.core.serialize.hessian.HessianSerializeFactory;
+import io.sunyi.link.core.server.ServerReceivedHandler;
+import io.sunyi.link.core.serialize.SerializeFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author sunyi
  *         Created on 15/9/23
  */
-public abstract class AbstractNettyServer implements Server {
+public class NettyNetworkServer implements NetworkServer {
+
+
+	private Integer port;
 
 	protected static final ConcurrentHashMap<io.netty.channel.Channel, io.sunyi.link.core.network.Channel<Channel>> channels =
 			new ConcurrentHashMap<Channel, io.sunyi.link.core.network.Channel<Channel>>();
@@ -27,6 +34,16 @@ public abstract class AbstractNettyServer implements Server {
 	protected Channel channel = null;
 
 	protected int SO_BACKLOG = 1024;
+
+	@Override
+	public Integer getPort() {
+		if (this.port == null) {
+			throw new LinkRuntimeException("NettyNetworkServer port is null");
+		}
+		return this.port;
+	}
+
+
 
 	@Override
 	public void start() throws Exception {
@@ -70,9 +87,6 @@ public abstract class AbstractNettyServer implements Server {
 
 		f = b.bind(getPort()).sync();
 		channel = f.channel();
-
-
-
 	}
 
 	@Override
@@ -80,6 +94,20 @@ public abstract class AbstractNettyServer implements Server {
 		bossGroup.shutdownGracefully();
 		workerGroup.shutdownGracefully();
 		channel.close().sync();
+	}
+
+	@Override
+	public SerializeFactory getSerializeFactory() {
+		return HessianSerializeFactory.getInstance();
+	}
+
+	@Override
+	public ServerReceivedHandler getServerReceivedHandler() {
+		return null;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
 	}
 }
 

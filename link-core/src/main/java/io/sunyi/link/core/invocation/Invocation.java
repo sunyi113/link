@@ -1,14 +1,14 @@
-package io.sunyi.link.core.invoker;
+package io.sunyi.link.core.invocation;
 
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
 
 /**
  *
- * 客户端发起 RPC 调用的 Invoker
+ * 客户端发起 RPC 调用的 Invocation
  * @param <T>
  */
-public interface Invoker<T>  {
+public interface Invocation<T>  {
 
     /**
      * get service interface.

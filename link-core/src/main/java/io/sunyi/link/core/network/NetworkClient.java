@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 /**
  * Created by sunyi on 15/9/23.
  */
-public interface Client {
+public interface NetworkClient {
 
 	InetSocketAddress getServerAddress();
 

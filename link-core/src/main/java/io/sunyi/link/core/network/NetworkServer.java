@@ -1,19 +1,20 @@
 package io.sunyi.link.core.network;
 
 import io.sunyi.link.core.serialize.SerializeFactory;
+import io.sunyi.link.core.server.ServerReceivedHandler;
 
 /**
  * 负责启动服务，接收请求，序列化、反序列化报文。
  *
  * Created by sunyi on 15/9/23.
  */
-public interface Server {
+public interface NetworkServer {
 
 	/**
 	 * server port
 	 * @return
 	 */
-	int getPort();
+	Integer getPort();
 
 	/**
 	 * start the server
@@ -21,7 +22,7 @@ public interface Server {
 	void start() throws Exception;
 
 	/**
-	 * shutdown the server
+	 * close the server
 	 */
 	void shutdown() throws Exception;
 
