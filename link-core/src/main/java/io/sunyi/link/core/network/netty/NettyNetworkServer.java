@@ -8,11 +8,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.sunyi.link.core.body.RpcResponse;
 import io.sunyi.link.core.exception.LinkRuntimeException;
 import io.sunyi.link.core.network.NetworkServer;
 import io.sunyi.link.core.serialize.hessian.HessianSerializeFactory;
 import io.sunyi.link.core.server.ServerReceivedHandler;
 import io.sunyi.link.core.serialize.SerializeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NettyNetworkServer implements NetworkServer {
 
+	private Logger logger = LoggerFactory.getLogger(NettyNetworkServer.class);
 
 	private Integer port;
 
@@ -35,11 +39,14 @@ public class NettyNetworkServer implements NetworkServer {
 
 	protected int SO_BACKLOG = 1024;
 
+	private ServerReceivedHandler serverReceivedHandler = new ServerReceivedHandler();
+
+	public NettyNetworkServer(Integer port) {
+		this.port = port;
+	}
+
 	@Override
 	public Integer getPort() {
-		if (this.port == null) {
-			throw new LinkRuntimeException("NettyNetworkServer port is null");
-		}
 		return this.port;
 	}
 
@@ -49,7 +56,7 @@ public class NettyNetworkServer implements NetworkServer {
 	public void start() throws Exception {
 
 		if (getSerializeFactory() == null) {
-			throw new RuntimeException("SerializeFactory must not be null");
+			throw new LinkRuntimeException("SerializeFactory must not be null");
 		}
 
 		ServerBootstrap b = new ServerBootstrap();
@@ -70,7 +77,7 @@ public class NettyNetworkServer implements NetworkServer {
 
 							@Override
 							public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-								if (! (msg instanceof RpcRequest)) {
+								if (!(msg instanceof RpcRequest)) {
 									// TODO delete sout
 									System.out.println("msg instanceof RpcRequest == false");
 									return;
@@ -78,7 +85,11 @@ public class NettyNetworkServer implements NetworkServer {
 
 								RpcRequest request = (RpcRequest) msg;
 
-								
+								ServerReceivedHandler handler = getServerReceivedHandler();
+
+								RpcResponse response = handler.received(request);
+
+								ctx.writeAndFlush(response);
 
 							}
 						});
@@ -87,6 +98,10 @@ public class NettyNetworkServer implements NetworkServer {
 
 		f = b.bind(getPort()).sync();
 		channel = f.channel();
+
+
+		logger.info(NettyNetworkServer.class.getSimpleName() + " started.");
+
 	}
 
 	@Override
@@ -94,6 +109,8 @@ public class NettyNetworkServer implements NetworkServer {
 		bossGroup.shutdownGracefully();
 		workerGroup.shutdownGracefully();
 		channel.close().sync();
+
+		logger.info(NettyNetworkServer.class.getSimpleName() + " shutdown.");
 	}
 
 	@Override
@@ -106,9 +123,7 @@ public class NettyNetworkServer implements NetworkServer {
 		return null;
 	}
 
-	public void setPort(Integer port) {
-		this.port = port;
-	}
+
 }
 
 

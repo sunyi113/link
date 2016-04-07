@@ -1,6 +1,7 @@
 package io.sunyi.link.core.registry.zookeeper;
 
 import io.sunyi.link.core.exception.LinkRuntimeException;
+import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
@@ -100,7 +101,6 @@ public class ZookeeperClient {
 
 	public void setData(String path, String data) {
 		client.writeData(path, data);
-
 	}
 
 	public void registerChangeListener(String path, final ZookeeperListener listener) {
@@ -109,12 +109,19 @@ public class ZookeeperClient {
 
 			@Override
 			public void handleDataDeleted(String dataPath) throws Exception {
-
+				listener.handleDataDeleted(dataPath);
 			}
 
 			@Override
 			public void handleDataChange(String dataPath, Object data) throws Exception {
+				listener.handleDataChange(dataPath, data);
+			}
+		});
 
+		client.subscribeChildChanges(path, new IZkChildListener() {
+			@Override
+			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+				listener.handleChildChange(parentPath, currentChilds);
 			}
 		});
 	}

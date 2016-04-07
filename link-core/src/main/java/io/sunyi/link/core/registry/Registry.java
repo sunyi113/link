@@ -15,7 +15,7 @@ public interface Registry {
 	/**
 	 * 发布一个服务
 	 */
-	void publishServer(ServerConfig serverConfig);
+	void exportServer(ServerConfig serverConfig);
 
 
 	/**

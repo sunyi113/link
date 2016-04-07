@@ -44,7 +44,7 @@ public class InvocationProxyFactory {
 
 			//TODO 获取服务器列表
 
-			List<ServerConfig> serverList = registry.getServerList();
+			List<ServerConfig> serverList = registry.getServerList(interfaceClass);
 
 
 			//TODO load balance ， 选择一台
