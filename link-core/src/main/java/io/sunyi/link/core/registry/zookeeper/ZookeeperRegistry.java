@@ -2,6 +2,7 @@ package io.sunyi.link.core.registry.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
 import io.sunyi.link.core.registry.Registry;
+import io.sunyi.link.core.registry.RegistryListener;
 import io.sunyi.link.core.server.ServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ public class ZookeeperRegistry implements Registry {
 			client = new ZookeeperClient(zkUrl);
 			logger.info(ZookeeperRegistry.class.getSimpleName() + " initialized.");
 		}
-
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class ZookeeperRegistry implements Registry {
 		client.createPersistent(BASE_DIR_PATH + File.separator + interfaceClassName);
 
 
-		String classDir = BASE_DIR_PATH + File.separator + interfaceClassName + SERVER_DIR_PATH;
+		String classDir = getClassDir(serverConfig.getInterfaceClass());
 		client.createPersistent(classDir);
 
 		String serverConfigJson = getServerConfigJson(serverConfig);
@@ -75,7 +75,7 @@ public class ZookeeperRegistry implements Registry {
 	public List<ServerConfig> getServerList(Class interfaceClass) {
 
 		String interfaceClassName = interfaceClass.getName();
-		String classDir = BASE_DIR_PATH + File.separator + interfaceClassName + SERVER_DIR_PATH;
+		String classDir = getClassDir(interfaceClass);
 
 		List<String> children = client.getChildren(classDir);
 
@@ -91,9 +91,51 @@ public class ZookeeperRegistry implements Registry {
 	}
 
 	@Override
+	public List<ServerConfig> watching(Class interfaceClass, final RegistryListener listener) {
+
+		String classDir = getClassDir(interfaceClass);
+
+		client.registerChangeListener(classDir, new ZookeeperListener() {
+			@Override
+			public void handleDataDeleted(String dataPath) {
+				//
+			}
+
+			@Override
+			public void handleDataChange(String dataPath, Object data) {
+				//
+			}
+
+			@Override
+			public void handleChildChange(String parentPath, List<String> currentChilds) {
+				List<ServerConfig> list = null;
+				if (currentChilds != null) {
+					list = new ArrayList<ServerConfig>(currentChilds.size());
+					for (String json : currentChilds) {
+						list.add(JSONObject.parseObject(json, ServerConfig.class));
+					}
+				} else {
+					list = new ArrayList<ServerConfig>(0);
+				}
+
+				listener.onServerChange(list);
+			}
+		});
+
+		return getServerList(interfaceClass);
+	}
+
+	@Override
 	public void close() {
 		client.doClose();
 		logger.info(ZookeeperRegistry.class.getSimpleName() + " closed.");
+	}
+
+	private String getClassDir(Class interfaceClass) {
+		String interfaceClassName = interfaceClass.getName();
+		String classDir = BASE_DIR_PATH + File.separator + interfaceClassName + SERVER_DIR_PATH;
+
+		return classDir;
 	}
 
 	public void setZkUrl(String zkUrl) {

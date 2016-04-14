@@ -24,6 +24,8 @@ public interface Registry {
 	 */
 	List<ServerConfig> getServerList(Class interfaceClass);
 
+	List<ServerConfig> watching(Class interfaceClass, RegistryListener listener);
+
 
 	void close();
 

@@ -1,5 +1,9 @@
 package io.sunyi.link.core.network;
 
+import io.sunyi.link.core.body.RpcRequest;
+import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.serialize.SerializeFactory;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -8,9 +12,19 @@ import java.net.InetSocketAddress;
  */
 public interface NetworkClient {
 
-	InetSocketAddress getServerAddress();
 
-	Object send(Object requestBody);
+	void connection(InetSocketAddress inetSocketAddress);
 
+	RpcResponse send(RpcRequest rpcRequest, Long sendTimeout, Long timeout);
+
+	/**
+	 *
+	 * @return
+	 */
+	SerializeFactory getSerializeFactory();
+
+	boolean isActive();
+
+	void close();
 
 }

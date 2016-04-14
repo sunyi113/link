@@ -2,6 +2,7 @@ package io.sunyi.link.core.invocation.proxy;
 
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.registry.Registry;
+import io.sunyi.link.core.registry.RegistryListener;
 import io.sunyi.link.core.server.ServerConfig;
 
 import java.lang.reflect.InvocationHandler;
@@ -17,14 +18,13 @@ public class InvocationProxyFactory {
 	private static Registry registry = null;
 
 	public static Object getObject(final Class interfaceClass) {
-		// TODO
 		InvocationHandlerImpl invocationHandler = new InvocationHandlerImpl(interfaceClass);
 		Object proxy = Proxy.newProxyInstance(InvocationProxyFactory.class.getClassLoader(), new Class[]{interfaceClass}, invocationHandler);
 		return proxy;
 	}
 
 
-	private static class InvocationHandlerImpl<T> implements  InvocationHandler {
+	private static class InvocationHandlerImpl<T> implements InvocationHandler {
 
 
 		private final Class<T> interfaceClass;
@@ -40,11 +40,21 @@ public class InvocationProxyFactory {
 			//TODO 封装 PpcRequest 对象
 			RpcRequest request = new RpcRequest();
 
+			request.setInterfaceClass(interfaceClass);
+			request.setParameterTypes(method.getParameterTypes());
+			request.setParams(objects);
 
 
 			//TODO 获取服务器列表
+			List<ServerConfig> serverList =
+					registry.watching(interfaceClass, new RegistryListener() {
 
-			List<ServerConfig> serverList = registry.getServerList(interfaceClass);
+						@Override
+						public void onServerChange(List<ServerConfig> serverConfigs) {
+
+						}
+
+					});
 
 
 			//TODO load balance ， 选择一台
@@ -56,5 +66,7 @@ public class InvocationProxyFactory {
 		}
 	}
 
-
+	public static void setRegistry(Registry registry) {
+		InvocationProxyFactory.registry = registry;
+	}
 }

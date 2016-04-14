@@ -32,7 +32,7 @@ public class ServerReceivedHandler {
 
 			rpcResponse.setId(id);
 
-			ServerConfig serverConfig = ServerBootstrap.getServerConfig(interfaceClass);
+			ServerConfig serverConfig = ServerBootstrap.getInstance().getServerConfig(interfaceClass);
 			Method method = interfaceClass.getMethod(methodName, parameterTypes);
 
 			//TODO 嵌入 Filter

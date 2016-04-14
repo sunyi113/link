@@ -44,6 +44,7 @@ public class ServerBootstrap {
 
 	private ConcurrentHashMap<Class, ServerConfig> serverConfigMap = new ConcurrentHashMap<Class, ServerConfig>();
 
+	private ServerBootstrap(){}
 
 	public static ServerBootstrap getInstance() {
 		if (instance != null) {
