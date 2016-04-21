@@ -9,6 +9,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.context.ApplicationContext;
 import io.sunyi.link.core.exception.LinkRuntimeException;
 import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.serialize.SerializeFactory;
@@ -30,22 +31,32 @@ public class NettyNetworkClient implements NetworkClient {
 
 	private volatile Channel channel = null;
 
-	private volatile String hostAddress;
-	private volatile int port;
+	private volatile String remoteHostAddress;
+	private volatile int remoteHostPort;
+	private Integer connectionTimeoutMsec = 1000;
 
 
 	@Override
 	public void connection(InetSocketAddress inetSocketAddress) {
-		hostAddress = inetSocketAddress.getAddress().getHostAddress();
-		port = inetSocketAddress.getPort();
+		remoteHostAddress = inetSocketAddress.getAddress().getHostAddress();
+		remoteHostPort = inetSocketAddress.getPort();
 
 		EventLoopGroup group = new NioEventLoopGroup();
+
+
+		if (this.isActive()) {
+			return;
+		} else {
+			this.close();
+		}
 
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 					.channel(NioSocketChannel.class)
 					.option(ChannelOption.TCP_NODELAY, true)
+					.option(ChannelOption.SO_KEEPALIVE, true)
+					.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMsec)
 					.handler(new ChannelInitializer<SocketChannel>() {
 
 						@Override
@@ -56,6 +67,8 @@ public class NettyNetworkClient implements NetworkClient {
 
 							ch.pipeline().addLast("encode", new NettyEncode(getSerializeFactory()));
 							ch.pipeline().addLast("decode", new NettyDecode(getSerializeFactory()));
+
+							// TODO 重构Handler
 
 							ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
 
@@ -69,9 +82,11 @@ public class NettyNetworkClient implements NetworkClient {
 
 									RpcResponse response = (RpcResponse) msg;
 
+									// 根据 ID 找到发送请求的线程 Condition， 将其唤醒
 									Long id = response.getId();
 									SyncHolder holder = holderMap.get(id);
 									if (holder == null) {
+										// 当响应超时时，这个请求的上下文holder已经被移除了
 										// TODO delete sout
 										System.out.println("Response timeout, id:[" + id + "]");
 									}
@@ -90,11 +105,12 @@ public class NettyNetworkClient implements NetworkClient {
 					});
 
 
-			ChannelFuture channelFuture = b.connect(hostAddress, port).sync();
+			ChannelFuture channelFuture = b.connect(remoteHostAddress, remoteHostPort);
+			channelFuture.awaitUninterruptibly(connectionTimeoutMsec, TimeUnit.MILLISECONDS);
 			channel = channelFuture.channel();
 
 		} catch (Exception e) {
-			throw new LinkRuntimeException("Netty 连接服务器, 建立失败 hostAddress:[\" + hostAddress + \"],port:[\" + port + \"]", e);
+			throw new LinkRuntimeException("Netty 连接服务器, 建立失败 remoteHostAddress:[\" + remoteHostAddress + \"],remoteHostPort:[\" + remoteHostPort + \"]", e);
 		}
 	}
 
@@ -125,7 +141,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 发送数据超时， 这种服务器应该是接收不到信息
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException(LinkRuntimeException.SEND_TIMEOUT_ERROR, "Send message timeout, hostAddress:[" + hostAddress + "],port:[" + port + "]."));
+				response.setException(new LinkRuntimeException(LinkRuntimeException.SEND_TIMEOUT_ERROR, "Send message timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -134,7 +150,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 等待服务器响应超时
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException(LinkRuntimeException.TIMEOUT_ERROR, "Waiting response timeout, hostAddress:[" + hostAddress + "],port:[" + port + "]."));
+				response.setException(new LinkRuntimeException(LinkRuntimeException.TIMEOUT_ERROR, "Waiting response timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -144,7 +160,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 因为未知原因，造成的服务器响应没有收到, 这种情况应该不会出现
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException("Not found the response, hostAddress:[" + hostAddress + "],port:[" + port + "]."));
+				response.setException(new LinkRuntimeException("Not found the response, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -165,7 +181,7 @@ public class NettyNetworkClient implements NetworkClient {
 
 	@Override
 	public SerializeFactory getSerializeFactory() {
-		return HessianSerializeFactory.getInstance();
+		return ApplicationContext.getSerializeFactory();
 	}
 
 	@Override

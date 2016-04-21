@@ -65,7 +65,6 @@ public class ZookeeperRegistry implements Registry {
 		newServerConfig.setPort(serverConfig.getPort());
 		newServerConfig.setPid(serverConfig.getPid());
 		newServerConfig.setInterfaceClass(serverConfig.getInterfaceClass());
-		newServerConfig.setPriority(serverConfig.getPriority());
 
 		return JSONObject.toJSONString(newServerConfig);
 

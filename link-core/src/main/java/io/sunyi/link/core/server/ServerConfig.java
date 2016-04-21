@@ -29,11 +29,6 @@ public class ServerConfig<T> {
 
 	private Object serverImplement;
 
-	/**
-	 * 优先级,默认5
-	 */
-	private Integer priority = 5;
-
 
 	public Integer getPid() {
 		return pid;
@@ -75,11 +70,4 @@ public class ServerConfig<T> {
 		this.serverImplement = serverImplement;
 	}
 
-	public Integer getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Integer priority) {
-		this.priority = priority;
-	}
 }

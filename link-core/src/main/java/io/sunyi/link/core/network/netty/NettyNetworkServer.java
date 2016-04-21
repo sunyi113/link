@@ -9,6 +9,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.context.ApplicationContext;
 import io.sunyi.link.core.exception.LinkRuntimeException;
 import io.sunyi.link.core.network.NetworkServer;
 import io.sunyi.link.core.serialize.hessian.HessianSerializeFactory;
@@ -29,8 +30,6 @@ public class NettyNetworkServer implements NetworkServer {
 
 	private Integer port;
 
-	protected static final ConcurrentHashMap<io.netty.channel.Channel, io.sunyi.link.core.network.Channel<Channel>> channels =
-			new ConcurrentHashMap<Channel, io.sunyi.link.core.network.Channel<Channel>>();
 
 	protected EventLoopGroup bossGroup = new NioEventLoopGroup();
 	protected EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -49,7 +48,6 @@ public class NettyNetworkServer implements NetworkServer {
 	public Integer getPort() {
 		return this.port;
 	}
-
 
 
 	@Override
@@ -77,11 +75,16 @@ public class NettyNetworkServer implements NetworkServer {
 
 							@Override
 							public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
+								logger.info("in channelRead .............");
+
 								if (!(msg instanceof RpcRequest)) {
 									// TODO delete sout
 									System.out.println("msg instanceof RpcRequest == false");
 									return;
 								}
+
+
 
 								RpcRequest request = (RpcRequest) msg;
 
@@ -89,7 +92,11 @@ public class NettyNetworkServer implements NetworkServer {
 
 								RpcResponse response = handler.received(request);
 
+								logger.info("get response .............");
+
 								ctx.writeAndFlush(response);
+
+								logger.info("return response .............");
 
 							}
 						});
@@ -115,12 +122,12 @@ public class NettyNetworkServer implements NetworkServer {
 
 	@Override
 	public SerializeFactory getSerializeFactory() {
-		return HessianSerializeFactory.getInstance();
+		return ApplicationContext.getSerializeFactory();
 	}
 
 	@Override
 	public ServerReceivedHandler getServerReceivedHandler() {
-		return null;
+		return ApplicationContext.getServerReceivedHandler();
 	}
 
 

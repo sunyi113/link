@@ -3,11 +3,14 @@ package io.sunyi.link.core.body;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * RPC 调用时的请求报文对象
  */
 public class RpcRequest implements Serializable {
+
+	private static final AtomicLong gid = new AtomicLong(Long.MIN_VALUE);
 
 	/**
 	 * 一个 PRC 请求的 ID ，需要保证每个 PRC 请求的 ID 都不一样
@@ -28,6 +31,11 @@ public class RpcRequest implements Serializable {
 	private Class<?>[] parameterTypes;
 	private Object[] params;
 	private Map<String, String> attachments = new ConcurrentHashMap<String, String>();
+
+	public RpcRequest() {
+		id = gid.getAndIncrement();
+	}
+
 
 	public Long getId() {
 		return id;

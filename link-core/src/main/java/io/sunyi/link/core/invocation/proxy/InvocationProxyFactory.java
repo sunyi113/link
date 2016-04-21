@@ -1,6 +1,12 @@
 package io.sunyi.link.core.invocation.proxy;
 
 import io.sunyi.link.core.body.RpcRequest;
+import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.context.ApplicationContext;
+import io.sunyi.link.core.invocation.InvocationConfig;
+import io.sunyi.link.core.network.NetworkClient;
+import io.sunyi.link.core.network.NetworkClientSharedHolder;
+import io.sunyi.link.core.network.ReferenceCountNetworkClient;
 import io.sunyi.link.core.registry.Registry;
 import io.sunyi.link.core.registry.RegistryListener;
 import io.sunyi.link.core.server.ServerConfig;
@@ -8,19 +14,25 @@ import io.sunyi.link.core.server.ServerConfig;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.List;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author sunyi
  */
 public class InvocationProxyFactory {
 
-	private static Registry registry = null;
+	private static Registry registry = ApplicationContext.getRegistry();
 
-	public static Object getObject(final Class interfaceClass) {
-		InvocationHandlerImpl invocationHandler = new InvocationHandlerImpl(interfaceClass);
-		Object proxy = Proxy.newProxyInstance(InvocationProxyFactory.class.getClassLoader(), new Class[]{interfaceClass}, invocationHandler);
-		return proxy;
+	public static <T> T getObject(InvocationConfig<T> invocationConfig) {
+		InvocationHandlerImpl invocationHandler = new InvocationHandlerImpl(invocationConfig);
+
+
+		Class<T> interfaceClass = invocationConfig.getInterfaceClass();
+
+		return (T) Proxy.newProxyInstance(InvocationProxyFactory.class.getClassLoader(), new Class[]{interfaceClass}, invocationHandler);
 	}
 
 
@@ -28,41 +40,93 @@ public class InvocationProxyFactory {
 
 
 		private final Class<T> interfaceClass;
+		private final InvocationConfig<T> invocationConfig;
 
-		public InvocationHandlerImpl(Class<T> interfaceClass) {
-			this.interfaceClass = interfaceClass;
+		private final Random random = new Random();
+
+		private final ConcurrentHashMap<InetSocketAddress, NetworkClient> networkClients = new ConcurrentHashMap<InetSocketAddress, NetworkClient>();
+
+
+		public InvocationHandlerImpl(InvocationConfig<T> invocationConfig) {
+			this.invocationConfig = invocationConfig;
+			this.interfaceClass = invocationConfig.getInterfaceClass();
+
+			List<ServerConfig> serverConfigs = registry.getServerList(interfaceClass);
+			refresh(serverConfigs);
+
+			registry.watching(interfaceClass, new RegistryListener() {
+				@Override
+				public void onServerChange(List<ServerConfig> serverConfigs) {
+					refresh(serverConfigs);
+				}
+			});
 		}
 
 
 		@Override
 		public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
 
-			//TODO 封装 PpcRequest 对象
+			// 封装 PpcRequest 对象
 			RpcRequest request = new RpcRequest();
 
 			request.setInterfaceClass(interfaceClass);
+			request.setMethodName(method.getName());
 			request.setParameterTypes(method.getParameterTypes());
 			request.setParams(objects);
 
 
-			//TODO 获取服务器列表
-			List<ServerConfig> serverList =
-					registry.watching(interfaceClass, new RegistryListener() {
+			// 选择一个服务提供者
+			//TODO load balance
+			int index = random.nextInt(networkClients.size());
+			Iterator<Map.Entry<InetSocketAddress, NetworkClient>> iterator = networkClients.entrySet().iterator();
 
-						@Override
-						public void onServerChange(List<ServerConfig> serverConfigs) {
+			NetworkClient selectNetworkClient = null;
 
-						}
+			for (int i = 0; iterator.hasNext(); i++) {
+				Map.Entry<InetSocketAddress, NetworkClient> next = iterator.next();
+				if (i == index) {
+					selectNetworkClient = next.getValue();
+					break;
+				}
+			}
 
-					});
+			// 发送数据
+			RpcResponse response = selectNetworkClient.send(request, 1000L, invocationConfig.getTimeout());
+
+			// 返回结果
+			return response.recur();
+		}
+
+		private void refresh(List<ServerConfig> serverConfigs) {
+
+			HashSet<InetSocketAddress> newAddressSet = new HashSet<InetSocketAddress>();
+
+			for (ServerConfig serverConfig : serverConfigs) {
+				InetSocketAddress address = new InetSocketAddress(serverConfig.getIp(), serverConfig.getPort());
+				newAddressSet.add(address);
+			}
+
+			Set<InetSocketAddress> oldAddressSet = networkClients.keySet();
 
 
-			//TODO load balance ， 选择一台
-			//TODO 发送数据
-			//TODO 等待响应
-			//TODO 返回结果
+			// 增加新的服务端
+			for (InetSocketAddress newAddress : newAddressSet) {
+				if (!oldAddressSet.contains(newAddress)) {
+					NetworkClient networkClient = NetworkClientSharedHolder.getSharedNetworkClient(newAddress);
+					networkClients.put(newAddress, networkClient);
+				}
+			}
 
-			return null;
+
+			// 删除下线的服务端
+			for (InetSocketAddress oldAddress : oldAddressSet) {
+				if (!newAddressSet.contains(oldAddress)) {
+					NetworkClient networkClient = networkClients.get(oldAddress);
+					networkClient.close();
+				}
+			}
+
+
 		}
 	}
 

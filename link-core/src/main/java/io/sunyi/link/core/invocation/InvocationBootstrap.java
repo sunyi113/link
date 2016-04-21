@@ -1,5 +1,7 @@
 package io.sunyi.link.core.invocation;
 
+import io.sunyi.link.core.context.ApplicationContext;
+import io.sunyi.link.core.invocation.proxy.InvocationProxyFactory;
 import io.sunyi.link.core.registry.Registry;
 
 /**
@@ -12,7 +14,7 @@ public class InvocationBootstrap {
 	/**
 	 * 注册中心
 	 */
-	private Registry registry = null;
+	private Registry registry = ApplicationContext.getRegistry();
 
 	private InvocationBootstrap(){}
 
@@ -30,14 +32,10 @@ public class InvocationBootstrap {
 	}
 
 
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
-
 
 	public <T> T getProxy(InvocationConfig<T> invocationConfig) {
 
-		return null; // TODO
+		return InvocationProxyFactory.getObject(invocationConfig);
 	}
 
 }

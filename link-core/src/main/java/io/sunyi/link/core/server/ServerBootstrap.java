@@ -1,5 +1,6 @@
 package io.sunyi.link.core.server;
 
+import io.sunyi.link.core.context.ApplicationContext;
 import io.sunyi.link.core.exception.LinkRuntimeException;
 import io.sunyi.link.core.network.NetworkServer;
 import io.sunyi.link.core.registry.Registry;
@@ -35,11 +36,11 @@ public class ServerBootstrap {
 	/**
 	 * 网络服务
 	 */
-	private NetworkServer networkServer = null;
+	private NetworkServer networkServer = ApplicationContext.getNetworkServer();
 	/**
 	 * 注册中心
 	 */
-	private Registry registry = null;
+	private Registry registry = ApplicationContext.getRegistry();
 
 
 	private ConcurrentHashMap<Class, ServerConfig> serverConfigMap = new ConcurrentHashMap<Class, ServerConfig>();
@@ -163,11 +164,4 @@ public class ServerBootstrap {
 		}
 	}
 
-	public void setNetworkServer(NetworkServer networkServer) {
-		this.networkServer = networkServer;
-	}
-
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
 }
