@@ -7,13 +7,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.sunyi.link.core.body.AttachementKeys;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
 import io.sunyi.link.core.context.ApplicationContext;
 import io.sunyi.link.core.exception.LinkRuntimeException;
 import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.serialize.SerializeFactory;
-import io.sunyi.link.core.serialize.hessian.HessianSerializeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -26,6 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author sunyi
  */
 public class NettyNetworkClient implements NetworkClient {
+
+	private Logger logger = LoggerFactory.getLogger(NettyNetworkClient.class);
 
 	private static final Map<Long, SyncHolder> holderMap = new ConcurrentHashMap<Long, SyncHolder>();
 
@@ -75,8 +79,7 @@ public class NettyNetworkClient implements NetworkClient {
 								@Override
 								public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 									if (!(msg instanceof RpcResponse)) {
-										// TODO delete sout
-										System.out.println("msg instanceof RpcResponse == false");
+										logger.warn("msg instanceof RpcResponse == false");
 										return;
 									}
 
@@ -86,9 +89,8 @@ public class NettyNetworkClient implements NetworkClient {
 									Long id = response.getId();
 									SyncHolder holder = holderMap.get(id);
 									if (holder == null) {
-										// 当响应超时时，这个请求的上下文holder已经被移除了
-										// TODO delete sout
-										System.out.println("Response timeout, id:[" + id + "]");
+										logger.warn("收到 RpcResponse, 但没有找到对应的上下文, RpcResponse Id:[" + id + "], " + AttachementKeys.TIME_CONSUMING + ":[" + response.getAttachement(AttachementKeys.TIME_CONSUMING) + "]");
+										return;
 									}
 
 									holder.rel.lock();

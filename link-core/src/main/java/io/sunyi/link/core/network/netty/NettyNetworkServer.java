@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author sunyi
- *         Created on 15/9/23
  */
 public class NettyNetworkServer implements NetworkServer {
 
@@ -36,9 +35,7 @@ public class NettyNetworkServer implements NetworkServer {
 	protected ChannelFuture f = null;
 	protected Channel channel = null;
 
-	protected int SO_BACKLOG = 1024;
 
-	private ServerReceivedHandler serverReceivedHandler = new ServerReceivedHandler();
 
 	public NettyNetworkServer(Integer port) {
 		this.port = port;
@@ -76,7 +73,7 @@ public class NettyNetworkServer implements NetworkServer {
 							@Override
 							public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-								logger.info("in channelRead .............");
+								logger.debug("in channelRead .............");
 
 								if (!(msg instanceof RpcRequest)) {
 									// TODO delete sout
@@ -84,19 +81,17 @@ public class NettyNetworkServer implements NetworkServer {
 									return;
 								}
 
-
-
 								RpcRequest request = (RpcRequest) msg;
 
 								ServerReceivedHandler handler = getServerReceivedHandler();
 
 								RpcResponse response = handler.received(request);
 
-								logger.info("get response .............");
+								logger.debug("get response .............");
 
 								ctx.writeAndFlush(response);
 
-								logger.info("return response .............");
+								logger.debug("return response .............");
 
 							}
 						});

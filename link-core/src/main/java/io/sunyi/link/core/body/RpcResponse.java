@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by sunyi on 15/9/21.
+ *  @author sunyi
  */
 public class RpcResponse implements Serializable {
 

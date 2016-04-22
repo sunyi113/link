@@ -1,4 +1,4 @@
-package io.sunyi.link.test;
+package io.sunyi.link.test.demo;
 
 import io.sunyi.link.core.context.ApplicationContext;
 import io.sunyi.link.core.serialize.hessian.HessianSerializeFactory;
