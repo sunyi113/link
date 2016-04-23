@@ -7,15 +7,27 @@ import java.lang.management.ManagementFactory;
  */
 public class PidUtils {
 
+	private static Integer cachedPid = null;
 
 	public static Integer getPid() {
+
+		if (cachedPid != null) {
+			return cachedPid;
+		}
+
 		String name = ManagementFactory.getRuntimeMXBean().getName();
 		if (name != null && name.indexOf("@") > 0) {
 			String pid = name.split("@")[0];
-			return Integer.valueOf(pid);
+			cachedPid = Integer.valueOf(pid);
+			return cachedPid;
 		} else {
 			return -1;
 		}
+	}
+
+
+	public static void main(String args[]) {
+		System.out.println(getPid());
 	}
 
 }

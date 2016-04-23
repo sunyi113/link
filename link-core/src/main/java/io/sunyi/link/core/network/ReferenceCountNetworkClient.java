@@ -34,8 +34,8 @@ public class ReferenceCountNetworkClient implements NetworkClient {
 	}
 
 	@Override
-	public RpcResponse send(RpcRequest rpcRequest, Long sendTimeout, Long timeout) {
-		return networkClient.send(rpcRequest, sendTimeout, timeout);
+	public RpcResponse send(RpcRequest rpcRequest, Long timeout) {
+		return networkClient.send(rpcRequest, timeout);
 	}
 
 	@Override

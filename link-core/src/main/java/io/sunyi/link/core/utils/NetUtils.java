@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author sunyi
- *         Created on 15/11/2
  */
 public class NetUtils {
 
@@ -15,10 +14,18 @@ public class NetUtils {
 	public static final String ANYHOST = "0.0.0.0";
 	private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
+	private static String cachedLocalAddressIp = null;
 
-	public static String getLocalAddressIp(){
+
+	public static String getLocalAddressIp() {
+
+		if (cachedLocalAddressIp != null) {
+			return cachedLocalAddressIp;
+		}
+
 		InetAddress address = getLocalAddress();
-		return address == null ? LOCALHOST : address.getHostAddress();
+		cachedLocalAddressIp = address == null ? LOCALHOST : address.getHostAddress();
+		return cachedLocalAddressIp;
 	}
 
 	public static InetAddress getLocalAddress() {
@@ -71,8 +78,8 @@ public class NetUtils {
 			return false;
 		String name = address.getHostAddress();
 		return (name != null
-				&& ! ANYHOST.equals(name)
-				&& ! LOCALHOST.equals(name)
+				&& !ANYHOST.equals(name)
+				&& !LOCALHOST.equals(name)
 				&& IP_PATTERN.matcher(name).matches());
 	}
 

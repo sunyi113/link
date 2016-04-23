@@ -38,6 +38,7 @@ public class NettyNetworkClient implements NetworkClient {
 	private volatile String remoteHostAddress;
 	private volatile int remoteHostPort;
 	private Integer connectionTimeoutMsec = 1000;
+	private Integer sendTimeout = 1000;
 
 
 	@Override
@@ -117,7 +118,7 @@ public class NettyNetworkClient implements NetworkClient {
 	}
 
 	@Override
-	public RpcResponse send(RpcRequest rpcRequest, Long sendTimeout, Long timeout) {
+	public RpcResponse send(RpcRequest rpcRequest, Long timeout) {
 
 
 		SyncHolder holder = new SyncHolder();

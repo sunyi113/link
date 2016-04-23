@@ -9,11 +9,6 @@ public class HelloServiceImpl implements HelloService {
 
 	@Override
 	public String say(String content) {
-		try {
-			TimeUnit.SECONDS.sleep(2);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return content;
+		return "Server say: [" + content + "]";
 	}
 }

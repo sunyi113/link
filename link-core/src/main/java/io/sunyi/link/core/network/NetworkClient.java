@@ -15,10 +15,9 @@ public interface NetworkClient {
 
 	void connection(InetSocketAddress inetSocketAddress);
 
-	RpcResponse send(RpcRequest rpcRequest, Long sendTimeout, Long timeout);
+	RpcResponse send(RpcRequest rpcRequest, Long timeout);
 
 	/**
-	 *
 	 * @return
 	 */
 	SerializeFactory getSerializeFactory();

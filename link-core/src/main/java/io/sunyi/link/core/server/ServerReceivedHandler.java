@@ -35,12 +35,11 @@ public class ServerReceivedHandler {
 			ServerConfig serverConfig = ServerBootstrap.getInstance().getServerConfig(interfaceClass);
 			Method method = interfaceClass.getMethod(methodName, parameterTypes);
 
-			//TODO 嵌入 Filter
-
 			Object result = method.invoke(serverConfig.getServerImplement(), params); // 反射调用
 
 			rpcResponse.setResult(result);
 
+			//TODO 嵌入 Filter
 
 		} catch (Exception e) {
 			rpcResponse.setHasException(true);

@@ -1,7 +1,6 @@
 package io.sunyi.link.core.network;
 
 import io.sunyi.link.core.context.ApplicationContext;
-import io.sunyi.link.core.network.netty.NettyNetworkClient;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;

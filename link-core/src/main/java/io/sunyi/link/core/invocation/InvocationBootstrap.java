@@ -16,7 +16,9 @@ public class InvocationBootstrap {
 	 */
 	private Registry registry = ApplicationContext.getRegistry();
 
-	private InvocationBootstrap(){}
+
+	private InvocationBootstrap() {
+	}
 
 	public static InvocationBootstrap getInstance() {
 		if (instance != null) {
@@ -26,16 +28,17 @@ public class InvocationBootstrap {
 			if (instance != null) {
 				return instance;
 			}
+
 			instance = new InvocationBootstrap();
+
 			return instance;
 		}
 	}
 
 
-
 	public <T> T getProxy(InvocationConfig<T> invocationConfig) {
-
-		return InvocationProxyFactory.getObject(invocationConfig);
+		InvocationProxyFactory invocationProxyFactory = ApplicationContext.getInvocationProxyFactory();
+		return invocationProxyFactory.getObject(invocationConfig);
 	}
 
 }
