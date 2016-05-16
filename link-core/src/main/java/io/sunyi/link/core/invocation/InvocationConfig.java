@@ -32,6 +32,11 @@ public class InvocationConfig<T> {
 		return timeout;
 	}
 
+	/**
+	 * 请求、响应超时时间，单位毫秒
+	 *
+	 * @param timeout
+	 */
 	public void setTimeout(Long timeout) {
 		this.timeout = timeout;
 	}

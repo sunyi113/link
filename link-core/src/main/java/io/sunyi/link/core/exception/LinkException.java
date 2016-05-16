@@ -1,6 +1,6 @@
 package io.sunyi.link.core.exception;
 
-public class LinkRuntimeException extends RuntimeException {
+public class LinkException extends RuntimeException {
 
 	/**
 	 * 不确定的异常
@@ -20,27 +20,27 @@ public class LinkRuntimeException extends RuntimeException {
 
 	private int code = UNKNOWN_ERROR;
 
-	public LinkRuntimeException() {
+	public LinkException() {
 	}
 
-	public LinkRuntimeException(int code) {
+	public LinkException(int code) {
 		this.code = code;
 	}
 
-	public LinkRuntimeException(String message) {
+	public LinkException(String message) {
 		super(message);
 	}
 
-	public LinkRuntimeException(int code, String message) {
+	public LinkException(int code, String message) {
 		super(message);
 		this.code = code;
 	}
 
-	public LinkRuntimeException(String message, Throwable cause) {
+	public LinkException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public LinkRuntimeException(Throwable cause) {
+	public LinkException(Throwable cause) {
 		super(cause);
 	}
 

@@ -1,6 +1,6 @@
 package io.sunyi.link.core.network;
 
-import io.sunyi.link.core.context.ApplicationContext;
+import io.sunyi.link.core.context.LinkApplicationContext;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +13,7 @@ public class NetworkClientSharedHolder {
 	/**
 	 * 保存服务器地址与目标的Client
 	 */
-	private static volatile ConcurrentHashMap<InetSocketAddress, ReferenceCountNetworkClient> clients = new ConcurrentHashMap<InetSocketAddress, ReferenceCountNetworkClient>();
+	private static volatile ConcurrentHashMap<InetSocketAddress, NetworkClientReferenceCount> clients = new ConcurrentHashMap<InetSocketAddress, NetworkClientReferenceCount>();
 
 
 	/**
@@ -25,7 +25,7 @@ public class NetworkClientSharedHolder {
 	 */
 	public static NetworkClient getSharedNetworkClient(InetSocketAddress inetSocketAddress) {
 
-		ReferenceCountNetworkClient rcNetworkClient = clients.get(inetSocketAddress);
+		NetworkClientReferenceCount rcNetworkClient = clients.get(inetSocketAddress);
 
 		if (rcNetworkClient != null) {
 
@@ -39,11 +39,11 @@ public class NetworkClientSharedHolder {
 			}
 		}
 
-
-		NetworkClient networkClient = ApplicationContext.getNewNetworkClient();
+		NetworkClientFactory networkClientFactory = LinkApplicationContext.getNetworkClientFactory();
+		NetworkClient networkClient = networkClientFactory.getNetworkClient();
 		networkClient.connection(inetSocketAddress);
 
-		rcNetworkClient = new ReferenceCountNetworkClient(networkClient);
+		rcNetworkClient = new NetworkClientReferenceCount(networkClient);
 		rcNetworkClient.increment();
 
 		clients.put(inetSocketAddress, rcNetworkClient);

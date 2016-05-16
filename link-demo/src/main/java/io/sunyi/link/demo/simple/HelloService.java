@@ -1,4 +1,4 @@
-package io.sunyi.link.test.demo;
+package io.sunyi.link.demo.simple;
 
 /**
  * @author sunyi

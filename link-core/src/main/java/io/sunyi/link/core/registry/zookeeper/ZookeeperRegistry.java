@@ -1,6 +1,7 @@
 package io.sunyi.link.core.registry.zookeeper;
 
 import com.alibaba.fastjson.JSONObject;
+import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.registry.Registry;
 import io.sunyi.link.core.registry.RegistryListener;
 import io.sunyi.link.core.server.ServerConfig;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 基于 zookeeper 实现的注册中心
+ *
  * @author sunyi
  */
 public class ZookeeperRegistry implements Registry {
@@ -25,17 +28,21 @@ public class ZookeeperRegistry implements Registry {
 	private static final String BASE_DIR_PATH = "/link";
 	private static final String SERVER_DIR_PATH = "/server";
 
+	@Override
+	public void init() {
+		if (zkUrl == null || zkUrl.length() == 0) {
+			throw new LinkException("The ZookeeperRegistry need specify a zk url, @see LinkApplicationContext.setRegistryUrl(String)");
+		}
 
-	public ZookeeperRegistry(String zkUrl) {
-		this.zkUrl = zkUrl;
-		this.init();
-	}
-
-	private void init() {
 		if (client == null) {
 			client = new ZookeeperClient(zkUrl);
 			logger.info(ZookeeperRegistry.class.getSimpleName() + " initialized.");
 		}
+	}
+
+	@Override
+	public void setRegistryUrl(String url) {
+		this.zkUrl = url;
 	}
 
 	@Override
@@ -73,7 +80,6 @@ public class ZookeeperRegistry implements Registry {
 	@Override
 	public List<ServerConfig> getServerList(Class interfaceClass) {
 
-		String interfaceClassName = interfaceClass.getName();
 		String classDir = getClassDir(interfaceClass);
 
 		List<String> children = client.getChildren(classDir);

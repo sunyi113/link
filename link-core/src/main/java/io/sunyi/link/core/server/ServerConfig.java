@@ -1,6 +1,5 @@
 package io.sunyi.link.core.server;
 
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author sunyi

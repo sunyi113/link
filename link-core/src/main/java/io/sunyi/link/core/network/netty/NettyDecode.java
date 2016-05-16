@@ -1,10 +1,10 @@
 package io.sunyi.link.core.network.netty;
 
-import io.sunyi.link.core.serialize.ObjectReader;
-import io.sunyi.link.core.serialize.SerializeFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.sunyi.link.core.serialize.Serialize;
+import io.sunyi.link.core.serialize.SerializeFactory;
 
 import java.util.List;
 
@@ -14,12 +14,13 @@ import java.util.List;
  */
 public class NettyDecode extends MessageToMessageDecoder<ByteBuf> {
 
+
 	private SerializeFactory serializeFactory;
-	private ObjectReader objectReader;
+	private Serialize serialize;
 
 	public NettyDecode(SerializeFactory serializeFactory) {
 		this.serializeFactory = serializeFactory;
-		objectReader = serializeFactory.getObjectReader();
+		this.serialize = serializeFactory.getSerialize();
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class NettyDecode extends MessageToMessageDecoder<ByteBuf> {
 		byte[] bytes = new byte[msg.readableBytes()];
 		msg.readBytes(bytes);
 
-		Object object = objectReader.read(bytes);
+		Object object = serialize.read(bytes);
 		out.add(object);
 	}
 

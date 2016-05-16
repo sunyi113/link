@@ -1,13 +1,14 @@
 package io.sunyi.link.core.serialize;
 
+import io.sunyi.link.core.LinkScalableComponent;
+
 /**
  * 序列化工厂
  * Created by sunyi on 15/9/23.
  */
-public interface SerializeFactory {
+public interface SerializeFactory extends LinkScalableComponent {
 
-	ObjectReader getObjectReader();
+	Serialize getSerialize();
 
-	ObjectWriter getObjectWriter();
 
 }

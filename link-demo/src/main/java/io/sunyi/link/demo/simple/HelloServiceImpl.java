@@ -1,6 +1,4 @@
-package io.sunyi.link.test.demo;
-
-import java.util.concurrent.TimeUnit;
+package io.sunyi.link.demo.simple;
 
 /**
  * @author sunyi

@@ -1,7 +1,6 @@
 package io.sunyi.link.core.serialize.hessian;
 
-import io.sunyi.link.core.serialize.ObjectReader;
-import io.sunyi.link.core.serialize.ObjectWriter;
+import io.sunyi.link.core.serialize.Serialize;
 import io.sunyi.link.core.serialize.SerializeFactory;
 
 /**
@@ -9,47 +8,19 @@ import io.sunyi.link.core.serialize.SerializeFactory;
  */
 public class HessianSerializeFactory implements SerializeFactory {
 
-	private HessianObjectReader reader;
-	private HessianObjectWriter writer;
-
-	private static HessianSerializeFactory instance = new HessianSerializeFactory();
-
-	private HessianSerializeFactory() {
-	}
-
-
-	public static HessianSerializeFactory getInstance() {
-		return instance;
-	}
+	private HessianSerialize hessianSerialize;
 
 
 	@Override
-	public ObjectReader getObjectReader() {
-
-		if (reader == null) {
+	public Serialize getSerialize() {
+		if (hessianSerialize == null) {
 			synchronized (HessianSerializeFactory.class) {
-				if (reader == null) {
-					reader = new HessianObjectReader();
+				if (hessianSerialize == null) {
+					hessianSerialize = new HessianSerialize();
 				}
 			}
 		}
 
-		return reader;
+		return hessianSerialize;
 	}
-
-	@Override
-	public ObjectWriter getObjectWriter() {
-
-		if (writer == null) {
-			synchronized (HessianSerializeFactory.class) {
-				if (writer == null) {
-					writer = new HessianObjectWriter();
-				}
-			}
-		}
-
-		return writer;
-	}
-
-
 }

@@ -12,6 +12,8 @@
         <module>link</module>
         <module>link-core</module>
         <module>link-test</module>
+        <module>../../IdeaProjects/github/link-demo</module>
+        <module>link-demo</module>
     </modules>
 
 

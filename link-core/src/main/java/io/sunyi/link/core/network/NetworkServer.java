@@ -1,17 +1,17 @@
 package io.sunyi.link.core.network;
 
-import io.sunyi.link.core.serialize.SerializeFactory;
-import io.sunyi.link.core.server.ServerReceivedHandler;
+import io.sunyi.link.core.LinkScalableComponent;
 
 /**
  * 负责启动服务，接收请求，序列化、反序列化报文。
- *
+ * <p/>
  * Created by sunyi on 15/9/23.
  */
-public interface NetworkServer {
+public interface NetworkServer extends LinkScalableComponent {
 
 	/**
 	 * server port
+	 *
 	 * @return
 	 */
 	Integer getPort();
@@ -19,21 +19,12 @@ public interface NetworkServer {
 	/**
 	 * start the server
 	 */
-	void start() throws Exception;
+	void start();
 
 	/**
 	 * close the server
 	 */
-	void shutdown() throws Exception;
-
-	/**
-	 *
-	 * @return
-	 */
-	SerializeFactory getSerializeFactory();
-
-
-	ServerReceivedHandler getServerReceivedHandler();
+	void shutdown();
 
 
 }

@@ -1,15 +1,18 @@
 package io.sunyi.link.core.serialize.hessian;
 
 import com.caucho.hessian.io.Hessian2Input;
-import io.sunyi.link.core.serialize.ObjectReader;
+import com.caucho.hessian.io.Hessian2Output;
+import io.sunyi.link.core.serialize.Serialize;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * Created by sunyi on 15/9/22.
+ * @author sunyi
  */
-public class HessianObjectReader implements ObjectReader {
+public class HessianSerialize implements Serialize{
+
 
 	@Override
 	public Object read(byte[] bytes) throws IOException {
@@ -33,4 +36,19 @@ public class HessianObjectReader implements ObjectReader {
 			input.close();
 		}
 	}
+
+	@Override
+	public byte[] write(Object object) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Hessian2Output output = new Hessian2Output(baos);
+		try {
+			output.writeObject(object);
+			output.flush();
+			return baos.toByteArray();
+		} finally {
+			output.close();
+		}
+	}
+
+
 }

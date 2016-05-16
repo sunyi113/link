@@ -1,5 +1,6 @@
 package io.sunyi.link.core.registry;
 
+import io.sunyi.link.core.LinkScalableComponent;
 import io.sunyi.link.core.server.ServerConfig;
 
 import java.util.List;
@@ -10,7 +11,11 @@ import java.util.List;
  * @author sunyi
  *         Created on 16/2/15
  */
-public interface Registry {
+public interface Registry extends LinkScalableComponent {
+
+	void init();
+
+	void setRegistryUrl(String url);
 
 	/**
 	 * 发布一个服务

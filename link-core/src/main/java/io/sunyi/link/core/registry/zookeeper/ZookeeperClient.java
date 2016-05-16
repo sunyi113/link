@@ -1,6 +1,6 @@
 package io.sunyi.link.core.registry.zookeeper;
 
-import io.sunyi.link.core.exception.LinkRuntimeException;
+import io.sunyi.link.core.exception.LinkException;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
@@ -25,7 +25,7 @@ public class ZookeeperClient {
 	private volatile KeeperState state = KeeperState.SyncConnected;
 
 	public ZookeeperClient(String zkUrl) {
-		client = new ZkClient(zkUrl);
+		client = new ZkClient(zkUrl, 60 * 60 * 1000, 5 * 1000);// sessionTimeout 1个小时, connectionTimeout 5秒钟
 
 		client.setZkSerializer(new ZkSerializer() {
 
@@ -37,7 +37,7 @@ public class ZookeeperClient {
 					try {
 						return data.toString().getBytes(ZK_DATA_CHARSET);
 					} catch (UnsupportedEncodingException e) {
-						throw new LinkRuntimeException(e.getMessage(), e);
+						throw new LinkException(e.getMessage(), e);
 					}
 				}
 
@@ -52,7 +52,7 @@ public class ZookeeperClient {
 						return new String(bytes, ZK_DATA_CHARSET);
 					}
 				} catch (UnsupportedEncodingException e) {
-					throw new LinkRuntimeException(e.getMessage(), e);
+					throw new LinkException(e.getMessage(), e);
 				}
 			}
 		});

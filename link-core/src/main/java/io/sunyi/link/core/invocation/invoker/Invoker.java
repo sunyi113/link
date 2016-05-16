@@ -12,7 +12,6 @@ public class Invoker<T> {
 
 	private InvocationConfig<T> invocationConfig;
 	private NetworkClient networkClient;
-
 	private ServerConfig<T> serverConfig;
 	private InetSocketAddress serverAddress;
 
@@ -21,7 +20,6 @@ public class Invoker<T> {
 		this.invocationConfig = invocationConfig;
 		this.serverConfig = serverConfig;
 		this.networkClient = networkClient;
-
 		this.serverAddress = new InetSocketAddress(serverConfig.getIp(), serverConfig.getPort());
 	}
 
@@ -33,6 +31,8 @@ public class Invoker<T> {
 	}
 
 	public RpcResponse invoke(RpcRequest rpcRequest) {
+
+		// TODO Filter
 
 		RpcResponse rpcResponse = networkClient.send(rpcRequest, invocationConfig.getTimeout());
 
@@ -48,5 +48,15 @@ public class Invoker<T> {
 		return networkClient.isActive();
 	}
 
+	public InvocationConfig<T> getInvocationConfig() {
+		return invocationConfig;
+	}
 
+	public NetworkClient getNetworkClient() {
+		return networkClient;
+	}
+
+	public ServerConfig<T> getServerConfig() {
+		return serverConfig;
+	}
 }

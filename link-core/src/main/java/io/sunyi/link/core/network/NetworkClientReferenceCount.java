@@ -2,6 +2,7 @@ package io.sunyi.link.core.network;
 
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.serialize.SerializeFactory;
 
 import java.net.InetSocketAddress;
@@ -10,13 +11,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author sunyi
  */
-public class ReferenceCountNetworkClient implements NetworkClient {
+public class NetworkClientReferenceCount implements NetworkClient {
 
 	private final AtomicLong count = new AtomicLong(0);
 
 	private final NetworkClient networkClient;
 
-	public ReferenceCountNetworkClient(NetworkClient networkClient) {
+	public NetworkClientReferenceCount(NetworkClient networkClient) {
 		this.networkClient = networkClient;
 	}
 

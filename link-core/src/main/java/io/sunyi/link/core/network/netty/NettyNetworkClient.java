@@ -7,11 +7,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.sunyi.link.core.body.AttachementKeys;
+import io.sunyi.link.core.body.AttachmentKeys;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
-import io.sunyi.link.core.context.ApplicationContext;
-import io.sunyi.link.core.exception.LinkRuntimeException;
+import io.sunyi.link.core.context.LinkApplicationContext;
+import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.serialize.SerializeFactory;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class NettyNetworkClient implements NetworkClient {
 									Long id = response.getId();
 									SyncHolder holder = holderMap.get(id);
 									if (holder == null) {
-										logger.warn("收到 RpcResponse, 但没有找到对应的上下文, RpcResponse Id:[" + id + "], " + AttachementKeys.TIME_CONSUMING + ":[" + response.getAttachement(AttachementKeys.TIME_CONSUMING) + "]");
+										logger.warn("收到 RpcResponse, 但没有找到对应的上下文, RpcResponse Id:[" + id + "], " + AttachmentKeys.TIME_CONSUMING + ":[" + response.getAttachement(AttachmentKeys.TIME_CONSUMING) + "]");
 										return;
 									}
 
@@ -113,7 +113,7 @@ public class NettyNetworkClient implements NetworkClient {
 			channel = channelFuture.channel();
 
 		} catch (Exception e) {
-			throw new LinkRuntimeException("Netty 连接服务器, 建立失败 remoteHostAddress:[\" + remoteHostAddress + \"],remoteHostPort:[\" + remoteHostPort + \"]", e);
+			throw new LinkException("Netty 连接服务器, 建立失败 remoteHostAddress:[\" + remoteHostAddress + \"],remoteHostPort:[\" + remoteHostPort + \"]", e);
 		}
 	}
 
@@ -144,7 +144,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 发送数据超时， 这种服务器应该是接收不到信息
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException(LinkRuntimeException.SEND_TIMEOUT_ERROR, "Send message timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException(LinkException.SEND_TIMEOUT_ERROR, "Send message timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -153,7 +153,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 等待服务器响应超时
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException(LinkRuntimeException.TIMEOUT_ERROR, "Waiting response timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException(LinkException.TIMEOUT_ERROR, "Waiting response timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -163,7 +163,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 因为未知原因，造成的服务器响应没有收到, 这种情况应该不会出现
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkRuntimeException("Not found the response, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException("Not found the response, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
 				return response;
 			}
 
@@ -172,7 +172,7 @@ public class NettyNetworkClient implements NetworkClient {
 		} catch (Exception e) {
 			RpcResponse response = new RpcResponse();
 			response.setHasException(true);
-			response.setException(new LinkRuntimeException(e));
+			response.setException(new LinkException(e));
 			return response;
 		} finally {
 			rel.unlock();
@@ -184,7 +184,7 @@ public class NettyNetworkClient implements NetworkClient {
 
 	@Override
 	public SerializeFactory getSerializeFactory() {
-		return ApplicationContext.getSerializeFactory();
+		return LinkApplicationContext.getSerializeFactory();
 	}
 
 	@Override
