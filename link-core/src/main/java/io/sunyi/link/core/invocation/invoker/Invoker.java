@@ -2,11 +2,14 @@ package io.sunyi.link.core.invocation.invoker;
 
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.commons.LinkApplicationContext;
+import io.sunyi.link.core.filter.InvocationFilter;
 import io.sunyi.link.core.invocation.InvocationConfig;
 import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.server.ServerConfig;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 public class Invoker<T> {
 
@@ -32,9 +35,18 @@ public class Invoker<T> {
 
 	public RpcResponse invoke(RpcRequest rpcRequest) {
 
-		// TODO Filter
+
+		List<InvocationFilter> invocationFilters = LinkApplicationContext.getInvocationFilters();
+
+		for (InvocationFilter filter : invocationFilters) {
+			filter.preInvoke(this, rpcRequest);
+		}
 
 		RpcResponse rpcResponse = networkClient.send(rpcRequest, invocationConfig.getTimeout());
+
+		for (InvocationFilter filter : invocationFilters) {
+			filter.afterInvoke(this, rpcRequest, rpcResponse);
+		}
 
 		return rpcResponse;
 	}

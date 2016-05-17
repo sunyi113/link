@@ -1,10 +1,9 @@
 package io.sunyi.link.core.filter;
 
-import io.sunyi.link.core.LinkScalableComponent;
+import io.sunyi.link.core.commons.LinkScalableComponent;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
 import io.sunyi.link.core.invocation.invoker.Invoker;
-import io.sunyi.link.core.server.ServerConfig;
 
 /**
  * 调用方的Filter
@@ -14,19 +13,13 @@ import io.sunyi.link.core.server.ServerConfig;
 public interface InvocationFilter extends LinkScalableComponent {
 
 	/**
-	 * 在发起远程调用前执行的，如果返回的 RpcResponse 不为 null ，则替换真实返回结果
-	 *
-	 * @param rpcRequest
+	 * 在发起远程调用前执行
 	 */
-	RpcResponse preInvoke(RpcRequest rpcRequest, Invoker invoker);
+	void preInvoke(Invoker invoker, RpcRequest rpcRequest);
 
 	/**
-	 * 等待远程调用结束后执行，如果返回的 RpcResponse 不为 null ，则替换真实返回结果
-	 *
-	 * @param rpcRequest
-	 * @param rpcResponse
-	 * @param invoker
+	 * 等待远程调用结束后执行
 	 */
-	RpcResponse afterInvoke(RpcRequest rpcRequest, RpcResponse rpcResponse, Invoker invoker);
+	void afterInvoke(Invoker invoker, RpcRequest rpcRequest, RpcResponse rpcResponse);
 
 }

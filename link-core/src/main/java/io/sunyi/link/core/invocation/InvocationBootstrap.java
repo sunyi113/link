@@ -1,6 +1,6 @@
 package io.sunyi.link.core.invocation;
 
-import io.sunyi.link.core.context.LinkApplicationContext;
+import io.sunyi.link.core.commons.LinkApplicationContext;
 import io.sunyi.link.core.invocation.proxy.InvocationProxyFactory;
 import io.sunyi.link.core.registry.Registry;
 
@@ -42,7 +42,7 @@ public class InvocationBootstrap {
 
 	public <T> T getProxy(InvocationConfig<T> invocationConfig) {
 		InvocationProxyFactory invocationProxyFactory = LinkApplicationContext.getInvocationProxyFactory();
-		return invocationProxyFactory.getObject(invocationConfig);
+		return invocationProxyFactory.getProxy(invocationConfig);
 	}
 
 }

@@ -1,6 +1,6 @@
 package io.sunyi.link.core.serialize;
 
-import io.sunyi.link.core.LinkScalableComponent;
+import io.sunyi.link.core.commons.LinkScalableComponent;
 
 /**
  * 序列化工厂

@@ -1,6 +1,6 @@
 package io.sunyi.link.core.invocation.loadbalance;
 
-import io.sunyi.link.core.LinkScalableComponent;
+import io.sunyi.link.core.commons.LinkScalableComponent;
 import io.sunyi.link.core.invocation.invoker.Invoker;
 
 import java.util.List;

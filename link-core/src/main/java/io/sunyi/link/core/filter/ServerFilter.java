@@ -1,6 +1,6 @@
 package io.sunyi.link.core.filter;
 
-import io.sunyi.link.core.LinkScalableComponent;
+import io.sunyi.link.core.commons.LinkScalableComponent;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
 
@@ -11,8 +11,6 @@ public interface ServerFilter extends LinkScalableComponent {
 
 	/**
 	 * 在反射调用前执行的
-	 *
-	 * @param rpcRequest
 	 */
 	void preInvoke(RpcRequest rpcRequest);
 

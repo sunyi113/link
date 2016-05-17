@@ -3,11 +3,14 @@ package io.sunyi.link.core.server.handler;
 import io.sunyi.link.core.body.AttachmentKeys;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
+import io.sunyi.link.core.commons.LinkApplicationContext;
+import io.sunyi.link.core.filter.ServerFilter;
 import io.sunyi.link.core.server.ServerBootstrap;
 import io.sunyi.link.core.server.ServerConfig;
 import org.apache.commons.lang.time.StopWatch;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author sunyi
@@ -29,7 +32,6 @@ public class ServerHandler {
 	public RpcResponse received(RpcRequest rpcRequest) {
 
 		StopWatch timeConsuming = new StopWatch(); // 计时器
-		StopWatch timeConsumingWithoutFilter = new StopWatch(); // 计时器
 		timeConsuming.start();
 
 		RpcResponse rpcResponse = new RpcResponse();
@@ -44,24 +46,28 @@ public class ServerHandler {
 			ServerConfig serverConfig = ServerBootstrap.getInstance().getServerConfig(interfaceClass);
 			Method method = interfaceClass.getMethod(methodName, parameterTypes);
 
+			List<ServerFilter> filters = LinkApplicationContext.getServerFilters();
 
-			//TODO 嵌入 Filter before
+			for (ServerFilter filter : filters) {
+				filter.preInvoke(rpcRequest);
+			}
 
-			timeConsumingWithoutFilter.start();
 			Object result = method.invoke(serverConfig.getServerImplement(), params); // 反射调用
-			timeConsumingWithoutFilter.stop();
-
-			//TODO 嵌入 Filter  after
 
 			rpcResponse.setResult(result);
 
-			timeConsuming.stop();
+
 		} catch (Throwable e) {
 			rpcResponse.setHasException(true);
 			rpcResponse.setException(e);
 		} finally {
+			timeConsuming.stop();
 			rpcResponse.addAttachment(AttachmentKeys.TIME_CONSUMING, String.valueOf(timeConsuming.getTime()));
-			rpcResponse.addAttachment(AttachmentKeys.TIME_CONSUMING_WITHOUT_FILTER, String.valueOf(timeConsumingWithoutFilter.getTime()));
+		}
+
+		List<ServerFilter> filters = LinkApplicationContext.getServerFilters();
+		for (ServerFilter filter : filters) {
+			filter.afterInvoke(rpcRequest,rpcResponse);
 		}
 
 

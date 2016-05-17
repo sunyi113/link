@@ -3,7 +3,7 @@ package io.sunyi.link.core.invocation.proxy;
 import io.sunyi.link.core.body.AttachmentKeys;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
-import io.sunyi.link.core.context.LinkApplicationContext;
+import io.sunyi.link.core.commons.LinkApplicationContext;
 import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.invocation.InvocationConfig;
 import io.sunyi.link.core.invocation.invoker.Invoker;

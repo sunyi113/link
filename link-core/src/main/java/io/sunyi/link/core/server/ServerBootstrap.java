@@ -1,6 +1,6 @@
 package io.sunyi.link.core.server;
 
-import io.sunyi.link.core.context.LinkApplicationContext;
+import io.sunyi.link.core.commons.LinkApplicationContext;
 import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.network.NetworkServer;
 import io.sunyi.link.core.network.NetworkServerFactory;

@@ -10,7 +10,7 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import io.sunyi.link.core.body.AttachmentKeys;
 import io.sunyi.link.core.body.RpcRequest;
 import io.sunyi.link.core.body.RpcResponse;
-import io.sunyi.link.core.context.LinkApplicationContext;
+import io.sunyi.link.core.commons.LinkApplicationContext;
 import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.network.NetworkClient;
 import io.sunyi.link.core.serialize.SerializeFactory;
@@ -70,8 +70,9 @@ public class NettyNetworkClient implements NetworkClient {
 							ch.pipeline().addLast("LengthFieldPrepender", new LengthFieldPrepender(4));
 							ch.pipeline().addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
 
-							ch.pipeline().addLast("encode", new NettyEncode(getSerializeFactory()));
-							ch.pipeline().addLast("decode", new NettyDecode(getSerializeFactory()));
+							SerializeFactory serializeFactory = LinkApplicationContext.getSerializeFactory();
+							ch.pipeline().addLast("encode", new NettyEncode(serializeFactory));
+							ch.pipeline().addLast("decode", new NettyDecode(serializeFactory));
 
 							// TODO 重构Handler
 
@@ -98,7 +99,7 @@ public class NettyNetworkClient implements NetworkClient {
 
 									try {
 										holder.rpcResponse = response;
-										holder.condition.signalAll();
+										holder.condition.signal();
 									} finally {
 										holder.rel.unlock();
 									}
@@ -180,11 +181,6 @@ public class NettyNetworkClient implements NetworkClient {
 		}
 
 
-	}
-
-	@Override
-	public SerializeFactory getSerializeFactory() {
-		return LinkApplicationContext.getSerializeFactory();
 	}
 
 	@Override

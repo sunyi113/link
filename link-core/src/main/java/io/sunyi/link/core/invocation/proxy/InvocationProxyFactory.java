@@ -10,6 +10,6 @@ import io.sunyi.link.core.invocation.InvocationConfig;
  */
 public interface InvocationProxyFactory {
 
-	<T> T getObject(InvocationConfig<T> invocationConfig);
+	<T> T getProxy(InvocationConfig<T> invocationConfig);
 
 }

@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
 public class JdkInvocationProxyFactory implements InvocationProxyFactory {
 
 
-	public <T> T getObject(InvocationConfig<T> invocationConfig) {
+	public <T> T getProxy(InvocationConfig<T> invocationConfig) {
 		InvocationHandlerImpl invocationHandler = new InvocationHandlerImpl(invocationConfig);
 		Class<T> interfaceClass = invocationConfig.getInterfaceClass();
 		return (T) Proxy.newProxyInstance(JdkInvocationProxyFactory.class.getClassLoader(), new Class[]{interfaceClass}, invocationHandler);

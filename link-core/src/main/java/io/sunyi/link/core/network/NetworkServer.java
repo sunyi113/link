@@ -1,6 +1,6 @@
 package io.sunyi.link.core.network;
 
-import io.sunyi.link.core.LinkScalableComponent;
+import io.sunyi.link.core.commons.LinkScalableComponent;
 
 /**
  * 负责启动服务，接收请求，序列化、反序列化报文。
