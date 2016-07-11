@@ -30,7 +30,6 @@ public class JdkInvocationProxyFactory implements InvocationProxyFactory {
 			this.proxy = new InvocationProxy<T>(invocationConfig);
 		}
 
-
 		@Override
 		public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
 			return proxy.invoke(o, method, objects);

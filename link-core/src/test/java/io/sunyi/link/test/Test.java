@@ -1,7 +1,5 @@
 package io.sunyi.link.test;
 
-import com.alibaba.fastjson.JSONObject;
-
 /**
  * @author sunyi
  */
@@ -19,12 +17,13 @@ public class Test {
 	}
 
 	public static void main(String args[]) {
+//
+//		JSONObject json = new JSONObject();
+//
+//		json.put("class", Test.class);
+//
+//		System.out.println(json.toJSONString());
 
-		JSONObject json = new JSONObject();
-
-		json.put("class", Test.class);
-
-		System.out.println(json.toJSONString());
 
 	}
 

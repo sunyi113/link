@@ -143,7 +143,4 @@ public class ZookeeperRegistry implements Registry {
 		return classDir;
 	}
 
-	public void setZkUrl(String zkUrl) {
-		this.zkUrl = zkUrl;
-	}
 }

@@ -34,7 +34,6 @@ public class ServerMain1 {
 
 			@Override
 			public void afterInvoke(RpcRequest rpcRequest, RpcResponse rpcResponse) {
-
 			}
 		});
 

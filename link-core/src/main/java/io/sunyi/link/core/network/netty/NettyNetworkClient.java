@@ -145,7 +145,7 @@ public class NettyNetworkClient implements NetworkClient {
 				// 发送数据超时， 这种服务器应该是接收不到信息
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkException(LinkException.SEND_TIMEOUT_ERROR, "Send message timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException(LinkException.SEND_TIMEOUT_ERROR, "Send message timeout," + getDigest(rpcRequest, timeout)));
 				return response;
 			}
 
@@ -154,23 +154,22 @@ public class NettyNetworkClient implements NetworkClient {
 				// 等待服务器响应超时
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkException(LinkException.TIMEOUT_ERROR, "Waiting response timeout, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException(LinkException.TIMEOUT_ERROR, "Waiting response timeout, " + getDigest(rpcRequest, timeout)));
 				return response;
 			}
-
 
 			RpcResponse rpcResponse = holder.rpcResponse;
 			if (rpcResponse == null) {
 				// 因为未知原因，造成的服务器响应没有收到, 这种情况应该不会出现
 				RpcResponse response = new RpcResponse();
 				response.setHasException(true);
-				response.setException(new LinkException("Not found the response, remoteHostAddress:[" + remoteHostAddress + "],remoteHostPort:[" + remoteHostPort + "]."));
+				response.setException(new LinkException("Not found the response, " + getDigest(rpcRequest, timeout)));
 				return response;
 			}
 
 			return rpcResponse;
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			RpcResponse response = new RpcResponse();
 			response.setHasException(true);
 			response.setException(new LinkException(e));
@@ -194,11 +193,13 @@ public class NettyNetworkClient implements NetworkClient {
 
 	@Override
 	public void close() {
+
+		// TODO 应该暂时先不把连接关闭， 需要等所有的请求都等到响应或者超时后，再关闭连接。
+
 		if (channel != null) {
 			channel.close();
 		}
 
-		// TODO 应该暂时先不把连接关闭， 需要等所有的请求都等到响应或者超时后，再关闭连接。
 	}
 
 	/**
@@ -211,6 +212,29 @@ public class NettyNetworkClient implements NetworkClient {
 		volatile ReentrantLock rel;
 		volatile Condition condition;
 		volatile RpcResponse rpcResponse;
+	}
+
+	private String getDigest(RpcRequest rpcRequest, Long timeout) {
+
+		StringBuilder digest = new StringBuilder();
+
+		digestAppend(digest, "id", rpcRequest.getId());
+		digestAppend(digest, "interfaceClass", rpcRequest.getInterfaceClass());
+		digestAppend(digest, "methodName", rpcRequest.getMethodName());
+		digestAppend(digest, "remoteHostAddress", remoteHostAddress);
+		digestAppend(digest, "remoteHostPort", remoteHostPort);
+		digestAppend(digest, "timeout", timeout);
+		digestAppend(digest, "beginTime", System.currentTimeMillis());
+		String result = digest.substring(0, digest.length() - 1);
+
+		return result;
+	}
+
+	private void digestAppend(StringBuilder digest, String k, Object v) {
+		digest.append(k == null ? "" : k);
+		digest.append(":");
+		digest.append(v == null ? "" : v);
+		digest.append(",");
 	}
 
 

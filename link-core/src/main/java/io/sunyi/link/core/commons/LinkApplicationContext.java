@@ -20,7 +20,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 加载依赖的具体组件，根据配置文件加载。
+ * 加载依赖的具体组件，有三种方式获取组件，配置优先级如下
+ * <ol>
+ *     <li>直接 set 注入希望的实现</li>
+ *     <li>在用户配置文件中配置实现</li>
+ *     <li>在默认配置文件中选择实现</li>
+ * </ol>
  *
  * @author sunyi
  */
@@ -87,7 +92,7 @@ public class LinkApplicationContext {
 	 */
 	public static synchronized void initialization() {
 
-		checkStat();
+		checkInitialStat();
 
 		stat.incrementAndGet(); // 1
 
@@ -104,7 +109,10 @@ public class LinkApplicationContext {
 	}
 
 
-	private static void checkStat() {
+	/**
+	 * 检查是不是 Initial 状态，如果不是则抛异常
+	 */
+	private static void checkInitialStat() {
 		if (stat.get() > 0) {
 			throw new LinkException("Link application context stat is not initial, at this point has been unable to do so ");
 		}
@@ -146,34 +154,39 @@ public class LinkApplicationContext {
 
 		ClassLoader classLoader = LinkApplicationContext.class.getClassLoader();
 
+		// 注册中心
 		if (LinkApplicationContext.getRegistry() == null) {
 			Registry component = (Registry) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_REGISTRY);
 			component.setRegistryUrl(LinkApplicationContext.getRegistryUrl());
 			LinkApplicationContext.registry = component;
 		}
 
+		// 服务器端的网络通讯
 		if (LinkApplicationContext.getNetworkServerFactory() == null) {
 			NetworkServerFactory component = (NetworkServerFactory) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_NETWORKSERVERFACTORY);
 			component.setPort(LinkApplicationContext.getNetworkServerPort());
 			LinkApplicationContext.networkServerFactory = component;
 		}
 
-
+		// 客户端网络通讯组件
 		if (LinkApplicationContext.getNetworkClientFactory() == null) {
 			NetworkClientFactory component = (NetworkClientFactory) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_NETWORKCLIENTFACTORY);
 			LinkApplicationContext.networkClientFactory = component;
 		}
 
+		// 序列化组件
 		if (LinkApplicationContext.getSerializeFactory() == null) {
 			SerializeFactory component = (SerializeFactory) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_SERIALIZEFACTORY);
 			LinkApplicationContext.serializeFactory = component;
 		}
 
+		// Invocation代理类实现
 		if (LinkApplicationContext.getInvocationProxyFactory() == null) {
 			InvocationProxyFactory component = (InvocationProxyFactory) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_INVOCATIONPROXYFACTORY);
 			LinkApplicationContext.invocationProxyFactory = component;
 		}
 
+		// 负载均衡
 		if (LinkApplicationContext.getLoadBalance() == null) {
 			LoadBalance component = (LoadBalance) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_LOADBALANCE);
 			LinkApplicationContext.loadBalance = component;
@@ -195,7 +208,7 @@ public class LinkApplicationContext {
 
 
 	public static void setRegistry(Registry registry) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.registry = registry;
 	}
 
@@ -204,7 +217,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setRegistryUrl(String registryUrl) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.registryUrl = registryUrl;
 	}
 
@@ -213,7 +226,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setNetworkServerFactory(NetworkServerFactory networkServerFactory) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.networkServerFactory = networkServerFactory;
 	}
 
@@ -222,7 +235,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setNetworkClientFactory(NetworkClientFactory networkClientFactory) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.networkClientFactory = networkClientFactory;
 	}
 
@@ -231,7 +244,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setSerializeFactory(SerializeFactory serializeFactory) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.serializeFactory = serializeFactory;
 	}
 
@@ -240,7 +253,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setInvocationProxyFactory(InvocationProxyFactory invocationProxyFactory) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.invocationProxyFactory = invocationProxyFactory;
 	}
 
@@ -249,7 +262,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setLoadBalance(LoadBalance loadBalance) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.loadBalance = loadBalance;
 	}
 
@@ -258,7 +271,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void setNetworkServerPort(Integer networkServerPort) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.networkServerPort = networkServerPort;
 	}
 
@@ -267,7 +280,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void addServerFilters(ServerFilter serverFilter) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.serverFilters.add(serverFilter);
 	}
 
@@ -276,7 +289,7 @@ public class LinkApplicationContext {
 	}
 
 	public static void addInvocationFilters(InvocationFilter invocationFilter) {
-		checkStat();
+		checkInitialStat();
 		LinkApplicationContext.invocationFilters.add(invocationFilter);
 	}
 }

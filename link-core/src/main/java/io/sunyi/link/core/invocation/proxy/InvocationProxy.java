@@ -45,9 +45,11 @@ public class InvocationProxy<T> {
 		this.invocationConfig = invocationConfig;
 		this.registry = LinkApplicationContext.getRegistry();
 
+		// 第一次要手动的从注册中心获取服务器列表
 		List<ServerConfig> serverConfigs = registry.getServerList(interfaceClass);
 		refresh(serverConfigs);
 
+		// 通过向注册中心注册监听器，实现服务改变无感知
 		registry.watching(interfaceClass, new RegistryListener() {
 			@Override
 			public void onServerChange(List<ServerConfig> serverConfigs) {
@@ -83,7 +85,8 @@ public class InvocationProxy<T> {
 		return response.recur();
 	}
 
-	private void refresh(List<ServerConfig> serverConfigs) {
+
+	private synchronized void refresh(List<ServerConfig> serverConfigs) {
 
 		if (serverConfigs == null) {
 			serverConfigs = Collections.emptyList();

@@ -8,14 +8,14 @@ public class LinkException extends RuntimeException {
 	public static final int UNKNOWN_ERROR = 0;
 
 	/**
-	 * 发送消息超时异常
-	 */
-	public static final int SEND_TIMEOUT_ERROR = 1;
-
-	/**
 	 * 等待响应超时异常
 	 */
-	public static final int TIMEOUT_ERROR = 2;
+	public static final int TIMEOUT_ERROR = 1;
+
+	/**
+	 * 发送消息超时异常
+	 */
+	public static final int SEND_TIMEOUT_ERROR = 2;
 
 
 	private int code = UNKNOWN_ERROR;

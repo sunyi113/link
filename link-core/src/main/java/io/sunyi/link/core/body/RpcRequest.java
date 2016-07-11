@@ -30,7 +30,12 @@ public class RpcRequest implements Serializable {
 	 */
 	private Class<?>[] parameterTypes;
 	private Object[] params;
+
+	/**
+	 * {@link  AttachmentKeys }
+	 */
 	private Map<String, String> attachments = new ConcurrentHashMap<String, String>();
+
 
 	public RpcRequest() {
 		id = gid.getAndIncrement();
@@ -98,5 +103,6 @@ public class RpcRequest implements Serializable {
 	public Map<String, String> getAttachments() {
 		return attachments;
 	}
+
 
 }
