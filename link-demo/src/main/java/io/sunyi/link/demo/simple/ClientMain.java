@@ -4,8 +4,6 @@ import io.sunyi.link.core.commons.LinkApplicationContext;
 import io.sunyi.link.core.invocation.InvocationBootstrap;
 import io.sunyi.link.core.invocation.InvocationConfig;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author sunyi
  */
@@ -26,13 +24,8 @@ public class ClientMain {
 
 		HelloService proxy = invocationBootstrap.getProxy(helloServiceInvocationConfig);
 
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			try {
-				TimeUnit.SECONDS.sleep(1);
-				String say = proxy.say(String.valueOf(i));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		String result = proxy.say("我想去旅游...");
+		System.out.println(result);
+
 	}
 }
