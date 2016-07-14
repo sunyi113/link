@@ -1,6 +1,5 @@
 package io.sunyi.link.core.network.netty;
 
-import io.sunyi.link.core.exception.LinkException;
 import io.sunyi.link.core.network.NetworkServer;
 import io.sunyi.link.core.network.NetworkServerFactory;
 
@@ -13,16 +12,12 @@ public class NettyNetworkServerFactory implements NetworkServerFactory {
 	private volatile NetworkServer networkServer;
 
 	@Override
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
 	@Override
 	public NetworkServer getNetworkServer() {
-
-		if (port == null) {
-			throw new LinkException("The NettyNetworkServer need specify a port, @see LinkApplicationContext.setNetworkServerPort(Integer)");
-		}
 
 		if (networkServer == null) {
 			synchronized (NettyNetworkServerFactory.class) {

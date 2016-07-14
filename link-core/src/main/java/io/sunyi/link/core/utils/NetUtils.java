@@ -83,10 +83,5 @@ public class NetUtils {
 				&& IP_PATTERN.matcher(name).matches());
 	}
 
-	public static void main(String args[]) {
-
-		System.out.println(getLocalAddressIp());
-
-	}
 
 }

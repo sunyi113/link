@@ -23,18 +23,15 @@ public class ServerBootstrap {
 
 	private volatile static ServerBootstrap instance;
 
-
 	/**
 	 * 网络服务
 	 */
 	private NetworkServer networkServer;
 
-
 	/**
 	 * 注册中心
 	 */
 	private Registry registry;
-
 
 	private ConcurrentHashMap<Class, ServerConfig> serverConfigMap = new ConcurrentHashMap<Class, ServerConfig>();
 
@@ -52,8 +49,9 @@ public class ServerBootstrap {
 
 			final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
-			// 启动网络端口
+			// 启动网络服务
 			NetworkServerFactory networkServerFactory = LinkApplicationContext.getNetworkServerFactory();
+			networkServerFactory.setPort(LinkApplicationContext.getServerPort());
 			serverBootstrap.networkServer = networkServerFactory.getNetworkServer();
 			serverBootstrap.networkServer.start();
 
@@ -69,7 +67,7 @@ public class ServerBootstrap {
 			});
 
 
-			serverBootstrap.logger.info("Link server bootstrap has already started.");
+			serverBootstrap.logger.info("Link server bootstrap has already started...... ^_^");
 
 			instance = serverBootstrap;
 		}
@@ -103,7 +101,7 @@ public class ServerBootstrap {
 		// 在注册中心发布服务
 		registry.exportServer(serverConfig);
 
-		logger.info("Export link server, InterfaceClass:[{}],ImplementClass:[{}]", serverConfig.getInterfaceClass().getName(), serverConfig.getServerImplement().getClass().getName());
+		logger.info("Exported link server, InterfaceClass:[{}],ImplementClass:[{}]", serverConfig.getInterfaceClass().getName(), serverConfig.getServerImplement().getClass().getName());
 
 
 	}

@@ -15,7 +15,6 @@ public class ClientMain {
 
 
 		LinkApplicationContext.setRegistryUrl("192.168.1.120:2181");// 注册中心地址，写法按照 具体注册中心实现要求，默认 zk
-		LinkApplicationContext.setNetworkServerPort(10001); // 服务端网络服务端口，默认 netty
 
 		LinkApplicationContext.initialization();
 

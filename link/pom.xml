@@ -7,7 +7,7 @@
     <parent>
         <artifactId>link-parent</artifactId>
         <groupId>io.sunyi.link</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${link.version}</version>
     </parent>
 
 
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.tongbanjie.link</groupId>
             <artifactId>link-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${link.version}</version>
         </dependency>
     </dependencies>
 

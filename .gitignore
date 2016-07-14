@@ -1,5 +1,3 @@
 *.iml
-*.war
-*.jar
 
 target/

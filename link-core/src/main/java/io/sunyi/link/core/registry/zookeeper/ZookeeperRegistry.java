@@ -36,7 +36,7 @@ public class ZookeeperRegistry implements Registry {
 
 		if (client == null) {
 			client = new ZookeeperClient(zkUrl);
-			logger.info(ZookeeperRegistry.class.getSimpleName() + " initialized.");
+			logger.info(ZookeeperRegistry.class.getSimpleName() + " initialized, zkUrl: " + zkUrl + ".");
 		}
 	}
 

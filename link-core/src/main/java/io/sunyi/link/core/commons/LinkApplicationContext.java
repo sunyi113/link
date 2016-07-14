@@ -65,7 +65,7 @@ public class LinkApplicationContext {
 	/**
 	 * 服务端的端口
 	 */
-	private static volatile Integer networkServerPort;
+	private static volatile Integer serverPort;
 
 	/**
 	 * 网络通讯报文的序列化工厂
@@ -164,7 +164,6 @@ public class LinkApplicationContext {
 		// 服务器端的网络通讯
 		if (LinkApplicationContext.getNetworkServerFactory() == null) {
 			NetworkServerFactory component = (NetworkServerFactory) loadComponentFromConfig(classLoader, conf, Constants.CONFIG_COMPONENT_NETWORKSERVERFACTORY);
-			component.setPort(LinkApplicationContext.getNetworkServerPort());
 			LinkApplicationContext.networkServerFactory = component;
 		}
 
@@ -266,13 +265,13 @@ public class LinkApplicationContext {
 		LinkApplicationContext.loadBalance = loadBalance;
 	}
 
-	public static Integer getNetworkServerPort() {
-		return networkServerPort;
+	public static Integer getServerPort() {
+		return serverPort;
 	}
 
-	public static void setNetworkServerPort(Integer networkServerPort) {
+	public static void setServerPort(Integer serverPort) {
 		checkInitialStat();
-		LinkApplicationContext.networkServerPort = networkServerPort;
+		LinkApplicationContext.serverPort = serverPort;
 	}
 
 	public static List<ServerFilter> getServerFilters() {

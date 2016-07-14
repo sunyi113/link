@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:link="http://link.sunyi.io/schema/link-1.0"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://link.sunyi.io/schema/link-1.0 http://link.sunyi.io/schema/link-1.0.xsd
+       ">
+
+    <bean id="helloServiceImpl" class="io.sunyi.link.demo.spring.HelloServiceImpl"/>
+
+    <link:application registry-url="192.168.1.120:2181" server-port="10001"/>
+
+    <link:server interface="io.sunyi.link.demo.spring.HelloService" ref="helloServiceImpl"/>
+
+</beans>

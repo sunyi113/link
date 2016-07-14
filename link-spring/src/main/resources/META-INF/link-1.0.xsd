@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://link.sunyi.io/schema/link-1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://link.sunyi.io/schema/link-1.0">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+
+    <xsd:element name="application">
+        <xsd:complexType>
+            <xsd:group ref="applicationElements"/>
+            <xsd:attributeGroup ref="applicationAttributes"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="applicationAttributes">
+        <xsd:attribute name="registry-url" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>注册中心的URL地址</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="server-port" type="xsd:unsignedInt" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>服务端接收报文的端口，可选</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:group name="applicationElements">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="network-server-factory" type="propertyElementType" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="network-client-factory" type="propertyElementType" minOccurs="0"/>
+                <xsd:element name="serialize-factory" type="propertyElementType" minOccurs="0"/>
+                <xsd:element name="invocation-proxy-pactory" type="propertyElementType" minOccurs="0"/>
+                <xsd:element name="load-balance" type="propertyElementType" minOccurs="0"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:group>
+
+    <xsd:complexType name="propertyElementType" mixed="false">
+        <xsd:attribute name="ref" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="server">
+        <xsd:complexType>
+            <xsd:attribute name="interface" type="xsd:string"/>
+            <xsd:attribute name="ref" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="invocation">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" />
+            <xsd:attribute name="interface" type="xsd:string" use="required" />
+            <xsd:attribute name="timeout" type="xsd:int" default="1000"/>
+            <xsd:attribute name="retry-times" type="xsd:int" default="0"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

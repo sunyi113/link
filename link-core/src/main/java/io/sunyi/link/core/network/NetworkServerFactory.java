@@ -14,7 +14,7 @@ public interface NetworkServerFactory extends LinkScalableComponent {
 	 *
 	 * @param port
 	 */
-	void setPort(int port);
+	void setPort(Integer port);
 
 	/**
 	 * 获取NetworkServer，是否为单例模式由具体实现类决定。

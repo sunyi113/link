@@ -16,6 +16,8 @@ import io.sunyi.link.core.server.handler.ServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author sunyi
  */
@@ -23,7 +25,7 @@ public class NettyNetworkServer implements NetworkServer {
 
 	private Logger logger = LoggerFactory.getLogger(NettyNetworkServer.class);
 
-	private Integer port;
+	private volatile Integer port;
 
 
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -70,8 +72,7 @@ public class NettyNetworkServer implements NetworkServer {
 								public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
 									if (!(msg instanceof RpcRequest)) {
-										// TODO delete sout
-										System.out.println("msg instanceof RpcRequest == false");
+										logger.warn("NetworkServer read the message, but not instance of RpcRequest.");
 										return;
 									}
 
@@ -86,11 +87,12 @@ public class NettyNetworkServer implements NetworkServer {
 						}
 					});
 
-			f = b.bind(getPort()).sync();
+			f = b.bind(getPort() == null ? 0 : getPort()).sync();
 			channel = f.channel();
 
+			port = ((InetSocketAddress) channel.localAddress()).getPort();
 
-			logger.info(NettyNetworkServer.class.getSimpleName() + " started.");
+			logger.info(NettyNetworkServer.class.getSimpleName() + " started, port: " + port + ".");
 		} catch (InterruptedException e) {
 			throw new LinkException("NettyNetworkServer start fail.", e);
 		}
@@ -98,7 +100,7 @@ public class NettyNetworkServer implements NetworkServer {
 	}
 
 	@Override
-	public void shutdown(){
+	public void shutdown() {
 		try {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();

@@ -18,7 +18,7 @@ public class ServerMain2 {
 
 
 		LinkApplicationContext.setRegistryUrl("192.168.1.120:2181");
-		LinkApplicationContext.setNetworkServerPort(10002);
+		LinkApplicationContext.setServerPort(10002);
 
 		LinkApplicationContext.addServerFilters(new ServerFilter() {
 
