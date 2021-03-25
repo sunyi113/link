@@ -1,6 +1,6 @@
 # Link
 
-又一个轮子，SOA Framework , 服务发现、服务治理...
+撸一个 RPC 框架，用于学习使用...
 
 
 * [一个简单的代码示例](https://github.com/sunyi113/link/wiki/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%A4%BA%E4%BE%8B)
